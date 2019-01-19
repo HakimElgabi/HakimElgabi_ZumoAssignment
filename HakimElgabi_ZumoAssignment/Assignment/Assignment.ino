@@ -25,9 +25,11 @@ int incomingByte;                             // a variable to read incoming ser
 unsigned int sensor_values[NUM_SENSORS];      // declare number of sensors on the zumo
 bool isAutoModeOn = false;                    // a bool for the automated movement
 int calibratedValue[6];                       // the calibrated QTR_THRESHOLD of the black line
-int corridors[6];                             // array to hold the lengths of corridors
+int corridors[6] = {0, 0, 0, 0, 0, 0};                             // array to hold the lengths of corridors
+char turns[6] = {'U', 'U', 'U', 'U', 'U', 'U'};                                // array to hold the turns
 int corridorLength = 0;
 int corridorCounter = 0;
+int turnCounter = -1;
 
 void setup() {
   // initialize serial communication:
@@ -69,6 +71,14 @@ void checkInput() {
     }
     if (incomingByte == 'A') {
       automatedMovement();
+    }
+    if (incomingByte == 'r') {
+      ++turnCounter;
+      turns[turnCounter] = 'r';
+    }
+    if (incomingByte == 'l') {
+      ++turnCounter;
+      turns[turnCounter] = 'l';
     }
   }
 }
