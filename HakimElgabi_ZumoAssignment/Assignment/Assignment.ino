@@ -25,6 +25,9 @@ int incomingByte;                             // a variable to read incoming ser
 unsigned int sensor_values[NUM_SENSORS];      // declare number of sensors on the zumo
 bool isAutoModeOn = false;                    // a bool for the automated movement
 int calibratedValue[6];                       // the calibrated QTR_THRESHOLD of the black line
+int corridors[6];                             // array to hold the lengths of corridors
+int corridorLength = 0;
+int corridorCounter = 0;
 
 void setup() {
   // initialize serial communication:
@@ -74,6 +77,8 @@ void goForward(int duration) {
   motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
   delay(duration);
   motors.setSpeeds(0, 0);
+  if (isAutoModeOn == true)
+    corridorLength = corridorLength + duration;
 }
 
 void goBackwards(int duration) {
@@ -94,6 +99,7 @@ void turnRight(int turnDuration) {
   motors.setSpeeds(0, 0);
 }
 void zumoStop() {
+  isAutoModeOn = false;
   motors.setSpeeds(0, 0);
 }
 
@@ -105,6 +111,10 @@ bool detectWall() {
     // if any other sensors detect a wall, it stops the zumo
     goBackwards(DURATION);
     zumoStop();
+    isAutoModeOn = false;
+    corridors[corridorCounter] = corridorLength;
+    corridorLength = 0;
+    ++corridorCounter;
     return true;
   }
   else
