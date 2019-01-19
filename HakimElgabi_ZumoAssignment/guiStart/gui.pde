@@ -44,41 +44,18 @@ public void autoAction(GButton source, GEvent event) { //_CODE_:autoBtn:225239:
   showCommands.setText("Automated Mode Activated");
 } //_CODE_:autoBtn:225239:
 
-public void showCommandsAction(GTextField source, GEvent event) { //_CODE_:showCommands:358095:
-} //_CODE_:showCommands:358095:
-
 public void calibrateAction(GButton source, GEvent event) { //_CODE_:calibrateBtn:772610:
  myPort.write('t');
  showCommands.setText("Calibrating zumo!");
 } //_CODE_:calibrateBtn:772610:
 
-public void roomLeftAction(GButton source, GEvent event) { //_CODE_:roomLeftBtn:308807:
- myPort.write('l');
- showCommands.setText("Room to the left found");
-} //_CODE_:roomLeftBtn:308807:
-
-public void showTextAction(GTextArea source, GEvent event) { //_CODE_:showText:987080:
-} //_CODE_:showText:987080:
-
-public void showRoomAction(GTextField source, GEvent event) { //_CODE_:showRoom:967927:
-} //_CODE_:showRoom:967927:
-
-public void roomRightAction(GButton source, GEvent event) { //_CODE_:roomRightbtn:427325:
+public void rightTurnAction(GButton source, GEvent event) { //_CODE_:rightTurnBtn:520640:
  myPort.write('r');
- showCommands.setText("Room to the right found");
-} //_CODE_:roomRightbtn:427325:
+} //_CODE_:rightTurnBtn:520640:
 
-public void junctionAction(GButton source, GEvent event) { //_CODE_:junctionActionBtn:827796:
-  println("junctionActionBtn - GButton >> GEvent." + event + " @ " + millis());
-} //_CODE_:junctionActionBtn:827796:
-
-public void RightCorridorAction(GButton source, GEvent event) { //_CODE_:RightCorridorBtn:999615:
-  println("RightCorridorBtn - GButton >> GEvent." + event + " @ " + millis());
-} //_CODE_:RightCorridorBtn:999615:
-
-public void LeftCorridorAction(GButton source, GEvent event) { //_CODE_:LeftCorridorBtn:928367:
-  println("LeftCorridorBtn - GButton >> GEvent." + event + " @ " + millis());
-} //_CODE_:LeftCorridorBtn:928367:
+public void leftTurnBtnAction(GButton source, GEvent event) { //_CODE_:leftTurnBtn:996969:
+ myPort.write('l');
+} //_CODE_:leftTurnBtn:996969:
 
 
 
@@ -192,6 +169,16 @@ public void createGUI(){
   label6.setText("Movement");
   label6.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   label6.setOpaque(false);
+  rightTurnBtn = new GButton(this, 411, 84, 80, 30);
+  rightTurnBtn.setText("Right Turn");
+  rightTurnBtn.setTextBold();
+  rightTurnBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
+  rightTurnBtn.addEventHandler(this, "rightTurnAction");
+  leftTurnBtn = new GButton(this, 313, 84, 80, 30);
+  leftTurnBtn.setText("Left Turn");
+  leftTurnBtn.setTextBold();
+  leftTurnBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
+  leftTurnBtn.addEventHandler(this, "leftTurnBtnAction");
 }
 
 // Variable declarations 
@@ -218,3 +205,5 @@ GButton RightCorridorBtn;
 GButton LeftCorridorBtn; 
 GLabel label5; 
 GLabel label6; 
+GButton rightTurnBtn; 
+GButton leftTurnBtn; 
