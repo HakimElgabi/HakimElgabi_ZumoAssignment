@@ -20,16 +20,18 @@
 ZumoMotors motors;
 ZumoReflectanceSensorArray sensors(QTR_NO_EMITTER_PIN);
 ZumoBuzzer buzzer;
-//variable declrations
+//variable declerations
 int incomingByte;                             // a variable to read incoming serial data into
 unsigned int sensor_values[NUM_SENSORS];      // declare number of sensors on the zumo
 bool isAutoModeOn = false;                    // a bool for the automated movement
 int calibratedValue[6];                       // the calibrated QTR_THRESHOLD of the black line
-int corridors[6] = {0, 0, 0, 0, 0, 0};                             // array to hold the lengths of corridors
-char turns[6] = {'U', 'U', 'U', 'U', 'U', 'U'};                                // array to hold the turns
-int corridorLength = 0;
-int corridorCounter = 0;
-int turnCounter = -1;
+int corridors[6] = {0, 0, 0, 0, 0, 0};        // array to hold the lengths of corridors
+char turns[6] = {'U', 'U', 'U', 'U', 'U', 'U'}; // array to hold the corridor turns
+char rooms[6] = {'U', 'U', 'U', 'U', 'U', 'U'}; // array to hold the room turns
+int corridorLength = 0;                       // counter to hold the corridor length
+int corridorCounter = 0;                      // counter to hold the current corridor
+int roomCounter = -1;                         // counter for the current room turn
+bool personFound = false;
 
 void setup() {
   // initialize serial communication:
@@ -79,6 +81,17 @@ void checkInput() {
     if (incomingByte == 'l') {
       ++turnCounter;
       turns[turnCounter] = 'l';
+    }
+    if (incomingByte == 'd') {
+      ++roomCounter;
+      turns[roomCounter] = 'r';
+    }
+    if (incomingByte == 'a') {
+      ++roomCounter;
+      turns[roomCounter] = 'l';
+    }
+    if (incomingByte == 's') {
+      goForward(400);
     }
   }
 }
@@ -193,4 +206,48 @@ void calibrateZumo() {
   // Turn off LED and play buzzer to indicate we afre through with calibration
   digitalWrite(13, LOW);
   buzzer.play(">g32>>c32");
+}
+
+void scanRoom()
+{
+  personFound = false;
+  motors.setSpeeds(200, 200);
+  delay(450);
+  //turn right
+  for (int i = 0; i < 24 && personFound == false; i++)
+  {
+    motors.setSpeeds(TURN_SPEED, -TURN_SPEED);
+    delay(40);
+    motors.setSpeeds(0, 0);
+    //scan for object
+    if (sonar.ping_cm() > 0)
+    {
+      //send message to GUI
+      personFound = true;
+      Serial.print("Found a person at room " + (roomCounter + 1));
+      Serial.print(STRING_TERMINATOR);
+      break;
+    }
+  }
+  //turn left similar to 180 degrees
+  for (int i = 0; i < 48 && personFound == false; i++)
+  {
+    motors.setSpeeds(-TURN_SPEED, +TURN_SPEED);
+    delay(40);
+    motors.setSpeeds(0, 0);
+    if (sonar.ping_cm() > 0)
+    {
+      personFound = true;
+      Serial.print("Found a person at room " + (roomCounter + 1));
+      Serial.print(STRING_TERMINATOR);
+      break;
+    }
+  }
+  if (personFound == false)
+  {
+    Serial.print("No object detected!");
+    delay(10);
+  }
+  Serial.print("Please drive me outside the room!");
+  delay(10);
 }
