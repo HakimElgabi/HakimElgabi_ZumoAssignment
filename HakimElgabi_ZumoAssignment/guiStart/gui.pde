@@ -44,10 +44,42 @@ public void autoAction(GButton source, GEvent event) { //_CODE_:autoBtn:225239:
   showCommands.setText("Automated Mode Activated");
 } //_CODE_:autoBtn:225239:
 
+public void showCommandsAction(GTextField source, GEvent event) { //_CODE_:showCommands:358095:
+  println("showCommands - GTextField >> GEvent." + event + " @ " + millis());
+} //_CODE_:showCommands:358095:
+
 public void calibrateAction(GButton source, GEvent event) { //_CODE_:calibrateBtn:772610:
  myPort.write('t');
  showCommands.setText("Calibrating zumo!");
 } //_CODE_:calibrateBtn:772610:
+
+public void roomLeftAction(GButton source, GEvent event) { //_CODE_:roomLeftBtn:308807:
+  println("roomLeftBtn - GButton >> GEvent." + event + " @ " + millis());
+} //_CODE_:roomLeftBtn:308807:
+
+public void showTextAction(GTextArea source, GEvent event) { //_CODE_:showText:987080:
+  println("showText - GTextArea >> GEvent." + event + " @ " + millis());
+} //_CODE_:showText:987080:
+
+public void showRoomAction(GTextField source, GEvent event) { //_CODE_:showRoom:967927:
+  println("showRoom - GTextField >> GEvent." + event + " @ " + millis());
+} //_CODE_:showRoom:967927:
+
+public void roomRightAction(GButton source, GEvent event) { //_CODE_:roomRightbtn:427325:
+  println("roomRightbtn - GButton >> GEvent." + event + " @ " + millis());
+} //_CODE_:roomRightbtn:427325:
+
+public void junctionAction(GButton source, GEvent event) { //_CODE_:junctionActionBtn:827796:
+  println("junctionActionBtn - GButton >> GEvent." + event + " @ " + millis());
+} //_CODE_:junctionActionBtn:827796:
+
+public void RightCorridorAction(GButton source, GEvent event) { //_CODE_:RightCorridorBtn:999615:
+  println("RightCorridorBtn - GButton >> GEvent." + event + " @ " + millis());
+} //_CODE_:RightCorridorBtn:999615:
+
+public void LeftCorridorAction(GButton source, GEvent event) { //_CODE_:LeftCorridorBtn:928367:
+  println("LeftCorridorBtn - GButton >> GEvent." + event + " @ " + millis());
+} //_CODE_:LeftCorridorBtn:928367:
 
 public void rightTurnAction(GButton source, GEvent event) { //_CODE_:rightTurnBtn:520640:
  myPort.write('r');
@@ -56,6 +88,18 @@ public void rightTurnAction(GButton source, GEvent event) { //_CODE_:rightTurnBt
 public void leftTurnBtnAction(GButton source, GEvent event) { //_CODE_:leftTurnBtn:996969:
  myPort.write('l');
 } //_CODE_:leftTurnBtn:996969:
+
+public void rightRoomBtnAction(GButton source, GEvent event) { //_CODE_:rightRoomBtn:486986:
+ myPort.write('d');
+} //_CODE_:rightRoomBtn:486986:
+
+public void leftRoomAction(GButton source, GEvent event) { //_CODE_:leftRoomBtn:981116:
+ myPort.write('a');
+} //_CODE_:leftRoomBtn:981116:
+
+public void scanRoomAction(GButton source, GEvent event) { //_CODE_:scanRoom:568769:
+ myPort.write('s');
+} //_CODE_:scanRoom:568769:
 
 
 
@@ -138,7 +182,7 @@ public void createGUI(){
   roomRightbtn.setTextBold();
   roomRightbtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   roomRightbtn.addEventHandler(this, "roomRightAction");
-  sketchPad1 = new GSketchPad(this, 210, 130, 80, 60);
+  sketchPad1 = new GSketchPad(this, 212, 124, 80, 60);
   junctionActionBtn = new GButton(this, 561, 109, 80, 30);
   junctionActionBtn.setText("T-Junction");
   junctionActionBtn.setTextBold();
@@ -179,6 +223,21 @@ public void createGUI(){
   leftTurnBtn.setTextBold();
   leftTurnBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   leftTurnBtn.addEventHandler(this, "leftTurnBtnAction");
+  rightRoomBtn = new GButton(this, 410, 130, 80, 30);
+  rightRoomBtn.setText("Right Room");
+  rightRoomBtn.setTextBold();
+  rightRoomBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
+  rightRoomBtn.addEventHandler(this, "rightRoomBtnAction");
+  leftRoomBtn = new GButton(this, 312, 131, 80, 30);
+  leftRoomBtn.setText("Left Room");
+  leftRoomBtn.setTextBold();
+  leftRoomBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
+  leftRoomBtn.addEventHandler(this, "leftRoomAction");
+  scanRoom = new GButton(this, 311, 176, 80, 30);
+  scanRoom.setText("Scan Room");
+  scanRoom.setTextBold();
+  scanRoom.setLocalColorScheme(GCScheme.BLUE_SCHEME);
+  scanRoom.addEventHandler(this, "scanRoomAction");
 }
 
 // Variable declarations 
@@ -207,3 +266,6 @@ GLabel label5;
 GLabel label6; 
 GButton rightTurnBtn; 
 GButton leftTurnBtn; 
+GButton rightRoomBtn; 
+GButton leftRoomBtn; 
+GButton scanRoom; 
