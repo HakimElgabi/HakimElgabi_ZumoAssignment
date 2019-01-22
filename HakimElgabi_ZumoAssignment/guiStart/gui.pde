@@ -101,6 +101,10 @@ public void scanRoomAction(GButton source, GEvent event) { //_CODE_:scanRoom:568
  myPort.write('s');
 } //_CODE_:scanRoom:568769:
 
+public void EndAction(GButton source, GEvent event) { //_CODE_:End:355375:
+  println("End - GButton >> GEvent." + event + " @ " + millis());
+} //_CODE_:End:355375:
+
 
 
 // Create all the GUI controls. 
@@ -238,6 +242,10 @@ public void createGUI(){
   scanRoom.setTextBold();
   scanRoom.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   scanRoom.addEventHandler(this, "scanRoomAction");
+  End = new GButton(this, 412, 177, 80, 30);
+  End.setText("End");
+  End.setTextBold();
+  End.addEventHandler(this, "EndAction");
 }
 
 // Variable declarations 
@@ -269,3 +277,4 @@ GButton leftTurnBtn;
 GButton rightRoomBtn; 
 GButton leftRoomBtn; 
 GButton scanRoom; 
+GButton End;
