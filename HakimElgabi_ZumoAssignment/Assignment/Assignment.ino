@@ -93,6 +93,9 @@ void checkInput() {
     if (incomingByte == 's') {
       goForward(400);
     }
+    if (incomingByte == 'e') {
+      returnToTJunction();
+    }
   }
 }
 
@@ -214,7 +217,7 @@ void scanRoom()
   motors.setSpeeds(200, 200);
   delay(450);
   //turn right
-  for (int i = 0; i < 24 && personFound == false; i++)
+  for (int i = 0; i < 24 && objectFound == false; i++)
   {
     motors.setSpeeds(TURN_SPEED, -TURN_SPEED);
     delay(40);
@@ -223,31 +226,41 @@ void scanRoom()
     if (sonar.ping_cm() > 0)
     {
       //send message to GUI
-      personFound = true;
-      Serial.print("Found a person at room " + (roomCounter + 1));
+      objectFound = true;
+      roomScan = false;
+      message = "Found a person at room ";
+      Serial.print(message + (roomCounter + 1));
       Serial.print(STRING_TERMINATOR);
       break;
     }
   }
   //turn left similar to 180 degrees
-  for (int i = 0; i < 48 && personFound == false; i++)
+  for (int i = 0; i < 48 && objectFound == false; i++)
   {
     motors.setSpeeds(-TURN_SPEED, +TURN_SPEED);
     delay(40);
     motors.setSpeeds(0, 0);
     if (sonar.ping_cm() > 0)
     {
-      personFound = true;
-      Serial.print("Found a person at room " + (roomCounter + 1));
+      objectFound = true;
+      roomScan = false;
+      message = "Found a person at room ";
+      Serial.print(message + (roomCounter + 1));
       Serial.print(STRING_TERMINATOR);
       break;
     }
   }
-  if (personFound == false)
+  if (objectFound == false)
   {
     Serial.print("No object detected!");
     delay(10);
   }
   Serial.print("Please drive me outside the room!");
+  delay(10);
+}
+
+void returnToTJunction() {
+  goForward(corridors[corridorCounter - 1]);
+  Serial.print("Returning to TJunction");
   delay(10);
 }
