@@ -33,6 +33,178 @@ int corridorCounter = 0;                      // counter to hold the current cor
 int roomCounter = -1;                         // counter for the current room turn
 bool personFound = false;
 
+class Room
+{
+  public:
+    // Constructor
+    Room();
+    // Setters
+    void setPersonFound(bool);
+    void setRoomStatus(bool);
+    void setRoomSide(char);
+    void setRoomPos(int);
+    void setRoomNum(int);
+    void setCorridorNum(int);
+    // Getters
+    bool getRoomStatus();
+    bool getPersonFound();
+    char getRoomSide();
+    int getRoomPos();
+    int getRoomNum();
+    int getCorridorNum();
+  private:
+    // Variables
+    bool _roomStatus;
+    bool _personInRoom;
+    char _side ;
+    int _pos;
+    int _roomNum;
+    int _corridorNum;
+};
+
+Room::Room() {
+  _roomStatus = false;
+  _personInRoom = false;
+  _roomNum = 0;
+  _corridorNum = 0;
+  _side = 'U';
+  _pos = 0;
+}
+
+void Room::setPersonFound(bool personInRoom) {
+  _personInRoom = personInRoom;
+}
+
+void Room::setRoomStatus(bool roomStatus) {
+  _roomStatus = roomStatus;
+}
+
+bool Room::getRoomStatus() {
+  return _roomStatus;
+}
+
+void Room::setRoomSide(char side) {
+  _side = side;
+}
+void Room::setRoomPos(int pos) {
+  _pos = pos;
+}
+void Room::setRoomNum(int roomNum) {
+  _roomNum = roomNum;
+}
+
+void Room::setCorridorNum(int corridorNum) {
+  _corridorNum = corridorNum;
+}
+
+bool Room::getPersonFound() {
+  return _personInRoom;
+}
+
+char Room::getRoomSide() {
+  return _side;
+}
+
+int Room::getRoomPos() {
+  return _pos;
+}
+
+int Room::getRoomNum() {
+  return _roomNum;
+}
+
+int Room::getCorridorNum() {
+  return _corridorNum;
+}
+
+class Corridor
+{
+  public:
+    // Constructor
+    Corridor();
+    // Setter
+    void setCorridorStatus (bool);
+    void setCorridorLength(int);
+    void setCorridorType(String);
+    void setTurnPosition(int);
+    void setNumOfRooms();
+    void setPersonInCorridor();
+    // Getters
+    bool getCorridorStatus();
+    int getCorridorLength();
+    int getCorridorNumber();
+    int getTurnPosition();
+    String getCorridorType();
+    int getNumOfRooms();
+    bool getPersonInCorridor();
+    // Rooms Array
+    Room rooms[3] = {Room::Room(), Room::Room(), Room::Room()};   // Initialise the room array
+  private:
+    // Variables
+    String _type;
+    bool _corridorStatus;
+    bool _personInCorridor;
+    int _duration;
+    int _corNum;
+    int _turnPosition;
+    int _numOfRooms;
+};
+
+Corridor::Corridor() {
+  _corridorStatus = false;
+  _corNum = corridorCounter;
+  _personInCorridor = false;
+  _type = "U";
+  _duration = 0;
+  _numOfRooms = 0;
+}
+
+void Corridor::setCorridorLength(int duration) {
+  _duration = duration;
+}
+
+void Corridor::setCorridorStatus(bool corridorStatus) {
+  _corridorStatus = corridorStatus;
+}
+
+bool Corridor::getCorridorStatus() {
+  return _corridorStatus;
+}
+
+void Corridor::setCorridorType(String type) {
+  _type = type;
+}
+
+void Corridor::setNumOfRooms() {
+  ++_numOfRooms;
+}
+
+int Corridor::getCorridorLength() {
+  return _duration;
+}
+
+int Corridor::getCorridorNumber() {
+  return _corNum;
+}
+
+String Corridor::getCorridorType() {
+  return _type;
+}
+
+int Corridor::getNumOfRooms() {
+  return _numOfRooms;
+}
+
+void Corridor::setPersonInCorridor() {
+  _personInCorridor = true;
+}
+
+bool Corridor::getPersonInCorridor() {
+  return _personInCorridor;
+}
+
+Corridor corridors[6];
+
 void setup() {
   // initialize serial communication:
   Serial.begin(9600);
