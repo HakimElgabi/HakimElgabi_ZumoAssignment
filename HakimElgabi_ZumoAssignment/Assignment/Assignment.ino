@@ -450,9 +450,40 @@ void scanRoom()
 }
 
 void returnToTJunction() {
-  goForward(corridors[corridorCounter - 1]);
-  Serial.print("Returning to TJunction");
-  delay(10);
+  returnToJunctionBool = true;
+  Serial.print("T-Junction");
+  Serial.print(STRING_TERMINATOR);
+  Serial.print("Zumo is on the ");
+  Serial.print(corridorCounter);
+  Serial.print(STRING_TERMINATOR);
+  for (int f = corridors[corridorCounter].getCorridorLength() - 300; f > 0; f = f - DURATION) {
+    goForward(DURATION);
+    if (detectCorridor())
+      f = f + DURATION;
+  }
+  if (corridors[corridorCounter].getPersonInCorridor() == false) {
+    Serial.print("Nobody in this corridor");
+    Serial.print(STRING_TERMINATOR);
+  }
+  if (corridors[corridorCounter].getCorridorType() == "TR" && returnToJunctionBool == true) {
+    ++corridorCounter;
+    corridors[corridorCounter].setCorridorStatus(true);
+    corridors[corridorCounter].setCorridorType("TL");
+    Serial.print("Now ready to explore the left side of the T-Junction");
+    Serial.print(STRING_TERMINATOR);
+    returnToJunctionBool = false;
+    currentSide = 'l';
+  }
+  if (corridors[corridorCounter].getCorridorType() == "TL" && returnToJunctionBool == true) {
+    ++corridorCounter;
+    corridors[corridorCounter].setCorridorStatus(true);
+    corridors[corridorCounter].setCorridorType("TR");
+    Serial.print("Now ready to explore the right side of the T-Junction");
+    Serial.print(STRING_TERMINATOR);
+    returnToJunctionBool = false;
+    currentSide = 'r';
+  }
+  roomCounter = -1;
 }
 
 void mapCorridor (String type) {
