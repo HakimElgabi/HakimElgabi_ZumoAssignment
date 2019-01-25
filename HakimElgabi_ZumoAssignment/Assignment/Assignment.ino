@@ -12,7 +12,8 @@
 #define REVERSE_SPEED     150 // how fast it takes to revsere
 #define TURN_SPEED        150 // how fast it takes to turn
 #define DURATION          150 // how long it takes to turn in ms
-#define TURN_DURATION_1   150 // how long it takes to turn in ms
+#define TURN_DURATION_1   100 // how long it takes to turn in ms
+#define TURN_DURATION_2   90
 #define DETECT_LINE       150 // threshold for detecting the borders
 
 
@@ -25,9 +26,6 @@ int incomingByte;                             // a variable to read incoming ser
 unsigned int sensor_values[NUM_SENSORS];      // declare number of sensors on the zumo
 bool isAutoModeOn = false;                    // a bool for the automated movement
 int calibratedValue[6];                       // the calibrated QTR_THRESHOLD of the black line
-int corridors[6] = {0, 0, 0, 0, 0, 0};        // array to hold the lengths of corridors
-char turns[6] = {'U', 'U', 'U', 'U', 'U', 'U'}; // array to hold the corridor turns
-char rooms[6] = {'U', 'U', 'U', 'U', 'U', 'U'}; // array to hold the room turns
 int corridorLength = 0;                       // counter to hold the corridor length
 int corridorCounter = 0;                      // counter to hold the current corridor
 int roomCounter = -1;                         // counter for the current room turn
@@ -234,10 +232,10 @@ void checkInput() {
     if (incomingByte == 'B') {
       goBackwards(DURATION);
     }
-    if (incomingByte == 'L') {
-      turnLeft(TURN_DURATION_1);
+    if (incomingByte == 'a') {
+      turnLeft(TURN_DURATION_2);
     }
-    if (incomingByte == 'R') {
+    if (incomingByte == 'd') {
       turnRight(TURN_DURATION_1);
     }
     if (incomingByte == 'S') {
@@ -246,21 +244,35 @@ void checkInput() {
     if (incomingByte == 'A') {
       automatedMovement();
     }
+    if (incomingByte == 'R') {
+      Serial.print("Corridor to Right Mapped");
+      Serial.print(STRING_TERMINATOR);
+      mapCorridor("R");
+    }
+    if (incomingByte == 'L') {
+      Serial.print("Corridor to left Mapped");
+      Serial.print(STRING_TERMINATOR);
+      mapCorridor("L");
+    }
     if (incomingByte == 'r') {
-      ++turnCounter;
-      turns[turnCounter] = 'r';
+      ++roomCounter;          // Increment Room Counter
+      Serial.print("Room to the right mapped");
+      Serial.print(STRING_TERMINATOR);            //Send a message to the UI
+      corridors[corridorCounter].rooms[roomCounter].setRoomStatus(true);
+      corridors[corridorCounter].rooms[roomCounter].setRoomNum(roomCounter);
+      corridors[corridorCounter].rooms[roomCounter].setRoomPos(corridorLength + 300);
+      corridors[corridorCounter].rooms[roomCounter].setRoomSide('r');
+      goForward(450);
     }
     if (incomingByte == 'l') {
-      ++turnCounter;
-      turns[turnCounter] = 'l';
-    }
-    if (incomingByte == 'd') {
       ++roomCounter;
-      turns[roomCounter] = 'r';
-    }
-    if (incomingByte == 'a') {
-      ++roomCounter;
-      turns[roomCounter] = 'l';
+      Serial.print("Room to the left mapped");
+      Serial.print(STRING_TERMINATOR);            //Send a message to the UI
+      corridors[corridorCounter].rooms[roomCounter].setRoomStatus(true);
+      corridors[corridorCounter].rooms[roomCounter].setRoomNum(roomCounter);
+      corridors[corridorCounter].rooms[roomCounter].setRoomPos(corridorLength + 300);
+      corridors[corridorCounter].rooms[roomCounter].setRoomSide('l');
+      goForward(450);
     }
     if (incomingByte == 's') {
       goForward(400);
@@ -303,16 +315,22 @@ void zumoStop() {
 
 bool detectWall() {
   sensors.read(sensor_values);
-  if (sensor_values[1] >=  DETECT_LINE || sensor_values[2] >=  DETECT_LINE
-      || sensor_values[4] >= DETECT_LINE)
+  if ((sensor_values[0] >=  DETECT_LINE && sensor_values[5] >=  DETECT_LINE) ||
+      (sensor_values[0] >=  DETECT_LINE && sensor_values[1] >=  DETECT_LINE) ||
+      (sensor_values[4] >=  DETECT_LINE && sensor_values[4] >=  DETECT_LINE) ||
+      sensor_values[1] >=  DETECT_LINE || sensor_values[2] >=  DETECT_LINE
+      || sensor_values[4] >= DETECT_LINE || ERROR_COUNTER > 10)
   {
     // if any other sensors detect a wall, it stops the zumo
     goBackwards(DURATION);
     zumoStop();
-    isAutoModeOn = false;
-    corridors[corridorCounter] = corridorLength;
+    corridors[corridorCounter].setCorridorLength(corridorLength + 300); // The 300 is added to compensate for the Zumo's length
     corridorLength = 0;
-    ++corridorCounter;
+    ERROR_COUNTER = 0;
+    Serial.print("Zumo has reached the end of corridor");
+    Serial.print(STRING_TERMINATOR);
+    Serial.print(corridors[corridorCounter].getCorridorLength());
+    Serial.print(STRING_TERMINATOR);
     return true;
   }
   else
@@ -435,4 +453,18 @@ void returnToTJunction() {
   goForward(corridors[corridorCounter - 1]);
   Serial.print("Returning to TJunction");
   delay(10);
+}
+
+void mapCorridor (String type) {
+  if (isAtTJunction == false) {
+    ++corridorCounter;
+    corridors[corridorCounter].setCorridorStatus(true);
+    corridors[corridorCounter].setCorridorType(type);
+  }
+  if (isAtTJunction == true) {
+    ++corridorCounter;
+    corridors[corridorCounter].setCorridorStatus(true);
+    corridors[corridorCounter].setCorridorType("T" + type);
+  }
+  roomCounter = -1;
 }
