@@ -15,12 +15,12 @@
  */
 
 public void leftClick(GButton source, GEvent event) { //_CODE_:leftBtn:308221:
-  myPort.write('L');
+  myPort.write('a');
   showCommands.setText("Zumo moved left");
 } //_CODE_:leftBtn:308221:
 
 public void rightClick(GButton source, GEvent event) { //_CODE_:rightBtn:604378:
-  myPort.write('R');
+  myPort.write('d');
   showCommands.setText("Zumo moved right");
 } //_CODE_:rightBtn:604378:
 
@@ -37,68 +37,68 @@ public void backClick(GButton source, GEvent event) { //_CODE_:backBtn:984108:
 public void stopClick(GButton source, GEvent event) { //_CODE_:stopBtn:713639:
   myPort.write('S');
   showCommands.setText("Stop Zumo");
+  roomLeftBtn.setLocalColorScheme(GCScheme.CYAN_SCHEME);
+  roomRightbtn.setLocalColorScheme(GCScheme.CYAN_SCHEME);
+  roomLeftBtn.setEnabled(true);
+  roomRightbtn.setEnabled(true);
 } //_CODE_:stopBtn:713639:
 
 public void autoAction(GButton source, GEvent event) { //_CODE_:autoBtn:225239:
   myPort.write('A');
   showCommands.setText("Automated Mode Activated");
+  roomLeftBtn.setLocalColorScheme(GCScheme.RED_SCHEME);
+  roomRightbtn.setLocalColorScheme(GCScheme.RED_SCHEME);
+  roomLeftBtn.setEnabled(false);
+  roomRightbtn.setEnabled(false);
+
 } //_CODE_:autoBtn:225239:
 
 public void showCommandsAction(GTextField source, GEvent event) { //_CODE_:showCommands:358095:
-  println("showCommands - GTextField >> GEvent." + event + " @ " + millis());
 } //_CODE_:showCommands:358095:
 
 public void calibrateAction(GButton source, GEvent event) { //_CODE_:calibrateBtn:772610:
- myPort.write('t');
+ myPort.write('z');
  showCommands.setText("Calibrating zumo!");
 } //_CODE_:calibrateBtn:772610:
 
 public void roomLeftAction(GButton source, GEvent event) { //_CODE_:roomLeftBtn:308807:
-  println("roomLeftBtn - GButton >> GEvent." + event + " @ " + millis());
+ myPort.write('l');
+ showCommands.setText("Room to the left found");
+ roomLeftBtn.setEnabled(false);
+ roomRightbtn.setEnabled(false);
+ roomLeftBtn.setLocalColorScheme(GCScheme.RED_SCHEME);
+ roomRightbtn.setLocalColorScheme(GCScheme.RED_SCHEME);
 } //_CODE_:roomLeftBtn:308807:
 
 public void showTextAction(GTextArea source, GEvent event) { //_CODE_:showText:987080:
-  println("showText - GTextArea >> GEvent." + event + " @ " + millis());
 } //_CODE_:showText:987080:
 
-public void showRoomAction(GTextField source, GEvent event) { //_CODE_:showRoom:967927:
-  println("showRoom - GTextField >> GEvent." + event + " @ " + millis());
-} //_CODE_:showRoom:967927:
-
 public void roomRightAction(GButton source, GEvent event) { //_CODE_:roomRightbtn:427325:
-  println("roomRightbtn - GButton >> GEvent." + event + " @ " + millis());
+ myPort.write('r');
+ showCommands.setText("Room to the right found");
+ roomLeftBtn.setEnabled(false);
+ roomRightbtn.setEnabled(false);
+ roomLeftBtn.setLocalColorScheme(GCScheme.RED_SCHEME);
+ roomRightbtn.setLocalColorScheme(GCScheme.RED_SCHEME);
 } //_CODE_:roomRightbtn:427325:
 
 public void junctionAction(GButton source, GEvent event) { //_CODE_:junctionActionBtn:827796:
-  println("junctionActionBtn - GButton >> GEvent." + event + " @ " + millis());
+  myPort.write('t');
+  showCommands.setText("Begining return journey Room");
 } //_CODE_:junctionActionBtn:827796:
 
 public void RightCorridorAction(GButton source, GEvent event) { //_CODE_:RightCorridorBtn:999615:
-  println("RightCorridorBtn - GButton >> GEvent." + event + " @ " + millis());
+  myPort.write('R');
+  showCommands.setText("Mapping corridor to the right");
 } //_CODE_:RightCorridorBtn:999615:
 
 public void LeftCorridorAction(GButton source, GEvent event) { //_CODE_:LeftCorridorBtn:928367:
-  println("LeftCorridorBtn - GButton >> GEvent." + event + " @ " + millis());
+  myPort.write('L');
+  showCommands.setText("Mapping corridor to the left");
 } //_CODE_:LeftCorridorBtn:928367:
 
-public void rightTurnAction(GButton source, GEvent event) { //_CODE_:rightTurnBtn:520640:
- myPort.write('r');
-} //_CODE_:rightTurnBtn:520640:
-
-public void leftTurnBtnAction(GButton source, GEvent event) { //_CODE_:leftTurnBtn:996969:
- myPort.write('l');
-} //_CODE_:leftTurnBtn:996969:
-
-public void rightRoomBtnAction(GButton source, GEvent event) { //_CODE_:rightRoomBtn:486986:
- myPort.write('d');
-} //_CODE_:rightRoomBtn:486986:
-
-public void leftRoomAction(GButton source, GEvent event) { //_CODE_:leftRoomBtn:981116:
- myPort.write('a');
-} //_CODE_:leftRoomBtn:981116:
-
 public void scanRoomAction(GButton source, GEvent event) { //_CODE_:scanRoom:568769:
- myPort.write('s');
+  println("scanRoom - GButton >> GEvent." + event + " @ " + millis());
 } //_CODE_:scanRoom:568769:
 
 public void EndAction(GButton source, GEvent event) { //_CODE_:End:355375:
@@ -149,12 +149,12 @@ public void createGUI(){
   autoBtn.setTextBold();
   autoBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   autoBtn.addEventHandler(this, "autoAction");
-  label2 = new GLabel(this, 310, 250, 160, 20);
+  label2 = new GLabel(this, 294, 150, 160, 20);
   label2.setText("Commands sent to Zumo:");
   label2.setTextBold();
   label2.setLocalColorScheme(GCScheme.YELLOW_SCHEME);
   label2.setOpaque(false);
-  showCommands = new GTextField(this, 310, 270, 160, 30, G4P.SCROLLBARS_NONE);
+  showCommands = new GTextField(this, 294, 170, 160, 30, G4P.SCROLLBARS_NONE);
   showCommands.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   showCommands.setOpaque(true);
   showCommands.addEventHandler(this, "showCommandsAction");
@@ -172,15 +172,6 @@ public void createGUI(){
   showText.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   showText.setOpaque(true);
   showText.addEventHandler(this, "showTextAction");
-  showRoom = new GTextField(this, 20, 270, 280, 30, G4P.SCROLLBARS_NONE);
-  showRoom.setLocalColorScheme(GCScheme.BLUE_SCHEME);
-  showRoom.setOpaque(true);
-  showRoom.addEventHandler(this, "showRoomAction");
-  label3 = new GLabel(this, 20, 250, 90, 20);
-  label3.setText("Room details:");
-  label3.setTextBold();
-  label3.setLocalColorScheme(GCScheme.YELLOW_SCHEME);
-  label3.setOpaque(false);
   roomRightbtn = new GButton(this, 605, 73, 80, 30);
   roomRightbtn.setText("Room to Right");
   roomRightbtn.setTextBold();
@@ -217,32 +208,12 @@ public void createGUI(){
   label6.setText("Movement");
   label6.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   label6.setOpaque(false);
-  rightTurnBtn = new GButton(this, 411, 84, 80, 30);
-  rightTurnBtn.setText("Right Turn");
-  rightTurnBtn.setTextBold();
-  rightTurnBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
-  rightTurnBtn.addEventHandler(this, "rightTurnAction");
-  leftTurnBtn = new GButton(this, 313, 84, 80, 30);
-  leftTurnBtn.setText("Left Turn");
-  leftTurnBtn.setTextBold();
-  leftTurnBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
-  leftTurnBtn.addEventHandler(this, "leftTurnBtnAction");
-  rightRoomBtn = new GButton(this, 410, 130, 80, 30);
-  rightRoomBtn.setText("Right Room");
-  rightRoomBtn.setTextBold();
-  rightRoomBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
-  rightRoomBtn.addEventHandler(this, "rightRoomBtnAction");
-  leftRoomBtn = new GButton(this, 312, 131, 80, 30);
-  leftRoomBtn.setText("Left Room");
-  leftRoomBtn.setTextBold();
-  leftRoomBtn.setLocalColorScheme(GCScheme.BLUE_SCHEME);
-  leftRoomBtn.addEventHandler(this, "leftRoomAction");
-  scanRoom = new GButton(this, 311, 176, 80, 30);
+  scanRoom = new GButton(this, 312, 75, 80, 30);
   scanRoom.setText("Scan Room");
   scanRoom.setTextBold();
   scanRoom.setLocalColorScheme(GCScheme.BLUE_SCHEME);
   scanRoom.addEventHandler(this, "scanRoomAction");
-  End = new GButton(this, 412, 177, 80, 30);
+  End = new GButton(this, 409, 75, 80, 30);
   End.setText("End");
   End.setTextBold();
   End.addEventHandler(this, "EndAction");
@@ -262,8 +233,6 @@ GTextField showCommands;
 GButton calibrateBtn; 
 GButton roomLeftBtn; 
 GTextArea showText; 
-GTextField showRoom; 
-GLabel label3; 
 GButton roomRightbtn; 
 GSketchPad sketchPad1; 
 GButton junctionActionBtn; 
@@ -272,9 +241,5 @@ GButton RightCorridorBtn;
 GButton LeftCorridorBtn; 
 GLabel label5; 
 GLabel label6; 
-GButton rightTurnBtn; 
-GButton leftTurnBtn; 
-GButton rightRoomBtn; 
-GButton leftRoomBtn; 
 GButton scanRoom; 
-GButton End;
+GButton End; 
