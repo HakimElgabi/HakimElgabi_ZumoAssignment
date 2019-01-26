@@ -13,7 +13,8 @@
 #define TURN_SPEED        150 // how fast it takes to turn
 #define DURATION          150 // how long it takes to turn in ms
 #define TURN_DURATION_1   100 // how long it takes to turn in ms
-#define TURN_DURATION_2   90
+#define TURN_DURATION_2   90  
+#define NINETY_DEGREE_TURN  900
 #define DETECT_LINE       150 // threshold for detecting the borders
 
 
@@ -120,7 +121,7 @@ class Corridor
   public:
     // Constructor
     Corridor();
-    // Setter
+    // Setters
     void setCorridorStatus (bool);
     void setCorridorLength(int);
     void setCorridorType(String);
@@ -280,6 +281,9 @@ void checkInput() {
     if (incomingByte == 'e') {
       returnToTJunction();
     }
+    if (incomingByte == 'E') {
+      returnRoute();
+    }
   }
 }
 
@@ -315,7 +319,7 @@ void zumoStop() {
 
 bool detectWall() {
   sensors.read(sensor_values);
-  if ((sensor_values[0] >=  DETECT_LINE && sensor_values[5] >=  DETECT_LINE) ||
+  if ((sensor_values[0] >=  DETECT_LINE && sensor_values[5] >=  DETECT_LINE) || 
       (sensor_values[0] >=  DETECT_LINE && sensor_values[1] >=  DETECT_LINE) ||
       (sensor_values[4] >=  DETECT_LINE && sensor_values[4] >=  DETECT_LINE) ||
       sensor_values[1] >=  DETECT_LINE || sensor_values[2] >=  DETECT_LINE
@@ -498,4 +502,209 @@ void mapCorridor (String type) {
     corridors[corridorCounter].setCorridorType("T" + type);
   }
   roomCounter = -1;
+}
+
+void returnRoute() {
+  int numberOfCorridors = 0;
+  int numberOfRooms = 0;
+  int currentRoom = 0;
+  isReturnTrip = true;
+  returnToJunctionBool = false;
+  bool leaveTJunction = false;
+  int forwardDuration;
+
+  Serial.print("Optimizing return route");
+  Serial.print(STRING_TERMINATOR);
+  delay(1000);
+
+  for (int i = 0; i < 6; i++) {
+    if (corridors[i].getCorridorStatus() == true)
+      ++numberOfCorridors;
+  }
+
+  for (int i = numberOfCorridors - 1; i >= 0; i--) {
+    Serial.print("At Corridor ");
+    Serial.print(i + 1);
+    Serial.print(STRING_TERMINATOR);
+    forwardDuration = 0;
+    if (corridors[i].getPersonInCorridor() == false) {
+      if (isAtTJunction == false) {
+        forwardDuration = corridors[i].getCorridorLength();
+        Serial.print(forwardDuration);
+        Serial.print(STRING_TERMINATOR);
+      }
+      if (isAtTJunction == true && i == numberOfCorridors - 2) {
+        forwardDuration = 0;
+        leaveTJunction = true;
+        Serial.print("No people found on the otherside of the T-Junction, skipping corridor ");
+        Serial.print(STRING_TERMINATOR);
+      }
+      if (isAtTJunction == true && i == numberOfCorridors - 1) {
+        forwardDuration = corridors[i].getCorridorLength() - 300;
+        Serial.print("No people found in this Corridor returning to T-Junction");
+        Serial.print(STRING_TERMINATOR);
+      }
+      for (int f = forwardDuration; f > 0; f = f - DURATION) {
+        if (f > 0) {
+          goForward(DURATION);
+          if (detectWall())
+            break;
+          if (detectCorridor())
+            f = f + DURATION;
+        }
+        if (f == 0) {
+          goForward(1);
+        }
+      }
+    }
+    numberOfRooms = 0;
+    for (int r = 0; r < 3; r++) {
+      if (corridors[i].rooms[r].getRoomStatus() == true)
+        ++numberOfRooms;
+    }
+    if (numberOfRooms > 0 && corridors[i].getPersonInCorridor() == true) {
+      for (int r = numberOfRooms - 1; r > -2; r--) {
+        if (r == numberOfRooms - 1) {
+          Serial.print("Task 1");
+          Serial.print(STRING_TERMINATOR);
+          if (returnToJunctionBool == true) {
+            forwardDuration = corridors[i].rooms[0].getRoomPos() - 300;
+          }
+          if (returnToJunctionBool == false) {
+            forwardDuration = corridors[i].getCorridorLength() - corridors[i].rooms[r].getRoomPos();
+          }
+          for (int f = forwardDuration; f > 0; f = f - DURATION) {
+            goForward(DURATION);
+            if (detectCorridor())
+              f = f + DURATION;
+          }
+          if (returnToJunctionBool == true && corridors[i].rooms[r].getPersonFound() == true) {
+            autoEnterRoom(i, 0);
+          }
+          else if (returnToJunctionBool == false && corridors[i].rooms[r].getPersonFound() == true)
+            autoEnterRoom(i, r);
+        }
+        if (r == -1) {
+          ERROR_COUNTER = 5;
+          if (isAtTJunction == true && returnToJunctionBool == true) {
+            forwardDuration = corridors[i].rooms[currentRoom].getRoomPos() - 300;
+            leaveTJunction = true;
+            if (corridors[numberOfCorridors - 2].getCorridorType() == "TR")
+              currentSide = 'r';
+            if (corridors[numberOfCorridors - 2].getCorridorType() == "TL")
+              currentSide = 'l';
+          }
+          if (isAtTJunction == false) {
+            forwardDuration = corridors[i].rooms[0].getRoomPos();
+          }
+          if (isAtTJunction == true && returnToJunctionBool == false) {
+            forwardDuration = corridors[i].rooms[0].getRoomPos() - 300;
+          }
+          for (int f = forwardDuration; f > 0; f = f - DURATION) {
+            goForward(DURATION);
+            if (detectWall())
+              break;
+            if (detectCorridor())
+              f = f + DURATION;
+          }
+        }
+        if (r != numberOfRooms - 1 && r > -1) {
+          Serial.print("Task 3");
+          Serial.print(STRING_TERMINATOR);
+          if (isAtTJunction == true && returnToJunctionBool == true) {
+            if (corridors[i].rooms[currentRoom + 1].getPersonFound() == true) {
+              forwardDuration = corridors[currentRoom + 1].rooms[r].getRoomPos() - corridors[i].rooms[currentRoom].getPersonFound();
+              ++currentRoom;
+            }
+            else
+              forwardDuration = 0;
+          }
+          else
+            forwardDuration = corridors[i].rooms[r + 1].getRoomPos() - corridors[i].rooms[r].getRoomPos();
+          for (int f = forwardDuration; f > 0; f = f - DURATION) {
+            goForward(DURATION);
+            if (detectWall())
+              break;
+            if (detectCorridor())
+              f = f + DURATION;
+          }
+          if (returnToJunctionBool == true && corridors[i].rooms[r].getPersonFound() == true && currentRoom != 0) {
+            autoEnterRoom(i, currentRoom);
+          }
+          else if (returnToJunctionBool == false && corridors[i].rooms[r].getPersonFound() == true)
+            autoEnterRoom(i, r);
+        }
+      }
+    }
+    if (corridors[i].getCorridorType() == "R") {
+      Serial.print("Turning left onto new Corridor");
+      Serial.print(STRING_TERMINATOR);
+      turnLeft(NINETY_DEGREE_TURN);
+    }
+    if  (corridors[i].getCorridorType() == "L") {
+      turnRight(NINETY_DEGREE_TURN);
+      Serial.print("Turning right onto new Corridor");
+      Serial.print(STRING_TERMINATOR);
+    }
+    if (corridors[i].getCorridorType() == "TR" || corridors[i].getCorridorType() == "LR") {
+      delay(1000);
+    }
+    if (isAtTJunction == true && i == numberOfCorridors - 1 && corridors[numberOfCorridors - 2].getPersonInCorridor() == true) {
+      delay(1000);
+      returnToJunctionBool = true;
+      Serial.print("People found on opposite side of T-Junction, proceeding to scan");
+      Serial.print(STRING_TERMINATOR);
+    }
+    if (leaveTJunction == true) {
+      Serial.print("Leaving T-Junction");
+      Serial.print(STRING_TERMINATOR);
+      if (currentSide == 'r') {
+        turnLeft(NINETY_DEGREE_TURN);
+        Serial.print("Turning Right");
+        Serial.print(STRING_TERMINATOR);
+      }
+      if (currentSide == 'l') {
+        turnRight(NINETY_DEGREE_TURN);
+        Serial.print("Turning Left");
+        Serial.print(STRING_TERMINATOR);
+      }
+      leaveTJunction = false;
+      isAtTJunction = false;
+      returnToJunctionBool = false;
+    }
+  }
+  digitalWrite(ledPin, LOW);
+  Serial.print("Zumo has finished the return journey");
+  Serial.print(STRING_TERMINATOR);
+}
+
+void autoEnterRoom (int i, int r) {
+  ERROR_COUNTER = 0;
+  if (corridors[i].rooms[r].getRoomSide() == 'r') {
+    if (returnToJunctionBool == true)
+      turnRight(NINETY_DEGREE_TURN);
+    if (returnToJunctionBool == false)
+      turnLeft(NINETY_DEGREE_TURN);
+  }
+  if (corridors[i].rooms[r].getRoomSide() == 'l') {
+    if (returnToJunctionBool == true)
+      turnLeft(NINETY_DEGREE_TURN);
+    if (returnToJunctionBool == false)
+      turnRight(NINETY_DEGREE_TURN);
+  }
+  goForward(400);
+  scanRoom();
+  goBackwards(300);
+  if (corridors[i].rooms[r].getRoomSide() == 'r') {
+    if (returnToJunctionBool == true && corridors[i].rooms[r + 1].getPersonFound() == true)
+      turnLeft(NINETY_DEGREE_TURN);
+    if (returnToJunctionBool == false)
+      turnRight(NINETY_DEGREE_TURN);
+  }
+  if (corridors[i].rooms[r].getRoomSide() == 'l') {
+    if (returnToJunctionBool == true && corridors[i].rooms[r + 1].getPersonFound() == true)
+      turnRight(NINETY_DEGREE_TURN);
+    else
+      turnLeft(NINETY_DEGREE_TURN);
+  }
 }
