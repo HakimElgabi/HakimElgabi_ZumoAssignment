@@ -639,10 +639,10 @@ void returnRoute() {
     if (corridors[i].getCorridorType() == "R") {
       Serial.print("Turning left onto new Corridor");
       Serial.print(STRING_TERMINATOR);
-      turnLeft(NINETY_DEGREE_TURN);
+      turnLeft(NINETY_DEGREE_TURN_LEFT);
     }
     if  (corridors[i].getCorridorType() == "L") {
-      turnRight(NINETY_DEGREE_TURN);
+      turnRight(NINETY_DEGREE_TURN_RIGHT);
       Serial.print("Turning right onto new Corridor");
       Serial.print(STRING_TERMINATOR);
     }
@@ -659,12 +659,12 @@ void returnRoute() {
       Serial.print("Leaving T-Junction");
       Serial.print(STRING_TERMINATOR);
       if (currentSide == 'r') {
-        turnLeft(NINETY_DEGREE_TURN);
+        turnLeft(NINETY_DEGREE_TURN_LEFT);
         Serial.print("Turning Right");
         Serial.print(STRING_TERMINATOR);
       }
       if (currentSide == 'l') {
-        turnRight(NINETY_DEGREE_TURN);
+        turnRight(NINETY_DEGREE_TURN_RIGHT);
         Serial.print("Turning Left");
         Serial.print(STRING_TERMINATOR);
       }
@@ -682,29 +682,29 @@ void autoEnterRoom (int i, int r) {
   ERROR_COUNTER = 0;
   if (corridors[i].rooms[r].getRoomSide() == 'r') {
     if (returnToJunctionBool == true)
-      turnRight(NINETY_DEGREE_TURN);
+      turnRight(NINETY_DEGREE_TURN_RIGHT);
     if (returnToJunctionBool == false)
-      turnLeft(NINETY_DEGREE_TURN);
+      turnLeft(NINETY_DEGREE_TURN_LEFT);
   }
   if (corridors[i].rooms[r].getRoomSide() == 'l') {
     if (returnToJunctionBool == true)
-      turnLeft(NINETY_DEGREE_TURN);
+      turnLeft(NINETY_DEGREE_TURN_LEFT);
     if (returnToJunctionBool == false)
-      turnRight(NINETY_DEGREE_TURN);
+      turnRight(NINETY_DEGREE_TURN_RIGHT);
   }
   goForward(400);
   scanRoom();
   goBackwards(300);
   if (corridors[i].rooms[r].getRoomSide() == 'r') {
     if (returnToJunctionBool == true && corridors[i].rooms[r + 1].getPersonFound() == true)
-      turnLeft(NINETY_DEGREE_TURN);
+      turnLeft(NINETY_DEGREE_TURN_LEFT);
     if (returnToJunctionBool == false)
-      turnRight(NINETY_DEGREE_TURN);
+      turnRight(NINETY_DEGREE_TURN_RIGHT);
   }
   if (corridors[i].rooms[r].getRoomSide() == 'l') {
     if (returnToJunctionBool == true && corridors[i].rooms[r + 1].getPersonFound() == true)
-      turnRight(NINETY_DEGREE_TURN);
+      turnRight(NINETY_DEGREE_TURN_RIGHT);
     else
-      turnLeft(NINETY_DEGREE_TURN);
+      turnLeft(NINETY_DEGREE_TURN_LEFT);
   }
 }
