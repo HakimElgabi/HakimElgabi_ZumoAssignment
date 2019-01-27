@@ -8,6 +8,7 @@ String val;
 GCustomSlider sdr4;
 
 public void setup() {
+  // Initialise the UI
   size(700, 320);
   String portName = Serial.list()[0];
   myPort = new Serial(this,portName,9600);
@@ -36,6 +37,7 @@ public void draw() {
      val = myPort.readStringUntil('.');
      if (val != null) {
        if (val.startsWith("Start.")){
+         // Initialise the GUI when it recieves the Start message 
          showText.setText("Start");
          roomLeftBtn.setEnabled(false);
          roomRightbtn.setEnabled(false);
@@ -49,12 +51,15 @@ public void draw() {
          junctionBtn.setLocalColorScheme(GCScheme.RED_SCHEME);
        }
        else if (val.startsWith("Ri:")){
+         // Set the textfield to the new value
          showTurnSpeedRight.setText(val);
        }
        else if (val.startsWith("Le:")){
+         // Set the textfield to the new value
          TurnSpeedLeft.setText(val);
        }
-       else if (val.startsWith("Cor")){
+       else if (val.startsWith("Cor")){ 
+         // Set the buttons to red and stop them being used
          TurnSpeedLeft.appendText(val);
          RightCorridorBtn.setEnabled(false); 
          LeftCorridorBtn.setEnabled(false);
@@ -62,10 +67,12 @@ public void draw() {
          RightCorridorBtn.setLocalColorScheme(GCScheme.RED_SCHEME);
          LeftCorridorBtn.setLocalColorScheme(GCScheme.RED_SCHEME);
          junctionBtn.setLocalColorScheme(GCScheme.RED_SCHEME);
+         showText.appendText(val);
        }
        else
        {
-         if (val.contains("Zumo has reached the end of corridor")){
+         if (val.contains("Zumo has reached the end of corridor")){ 
+           // Set the buttons to cyan and make them available
               RightCorridorBtn.setEnabled(true);
               LeftCorridorBtn.setEnabled(true);
               junctionBtn.setEnabled(true);
@@ -81,6 +88,7 @@ public void draw() {
 
 public void init()
 {
+  // Initialise the textfields as bold
    showCommands.setTextBold();
    showText.setTextBold();
    showTurnSpeedRight.setTextBold();
