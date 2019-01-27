@@ -61,6 +61,6 @@ Helpful tool for building a UI quickly and efficiently in processing
 
 # Summary
 
-I believe I have competently completed all tasks and works reliably most of the time. During the automated movement, return to T-Junction and Return to Home segments the Zumo can detect and staying within the borders.
+I believe I have competently completed all tasks and works reliably most of the time. During the automated movement, return to T-Junction and Return to Home segments the Zumo can detect and stay within the borders.
 
 https://drive.google.com/open?id=1VQcvmv8twfLx4G-Rf3nX0g00jRStM6j4
